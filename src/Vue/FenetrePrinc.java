@@ -1,9 +1,10 @@
-
+package Vue;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import java.awt.Font;
@@ -13,9 +14,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JTable;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+
 import javax.swing.ListSelectionModel;
 import javax.swing.border.BevelBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
+
+import Modèle.*;
+
 import javax.swing.border.TitledBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.JTextField;
@@ -23,7 +32,7 @@ import javax.swing.border.MatteBorder;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class Proj extends JFrame {
+public class FenetrePrinc extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField textField;
@@ -34,27 +43,13 @@ public class Proj extends JFrame {
 	private JTextField textField_5;
 	private JTextField textField_6;
 	private JTextField textField_7;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Proj frame = new Proj();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
+	private JTable table_1;
+	Banque banque=new Banque();
+	
 	/**
 	 * Create the frame.
 	 */
-	public Proj() {
+	public FenetrePrinc() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 808, 522);
 		contentPane = new JPanel();
@@ -146,7 +141,19 @@ public class Proj extends JFrame {
 		textField_6.setBounds(112, 261, 197, 20);
 		panel.add(textField_6);
 		
+		
 		JButton btnNewButton = new JButton("Ajouter");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Compte c=new Compte(new Client(textField_2.getText(),textField.getText(),textField_1.getText(),textField_5.getText(),textField_3.getText(),textField_6.getText()), Float.parseFloat(textField_4.getText()));				
+				banque.ajouterClient(c);
+				DefaultTableModel tblModel = (DefaultTableModel) table_1.getModel();
+				Compte cc=(Compte) banque.listes.get((banque.listes.size())-1);
+				String data[]= {Integer.toString(cc.getnCompte()),cc.getClient().getCin(),cc.getClient().getNom(),cc.getClient().getPrenom(),String.valueOf(cc.getSoldeInitial()),String.valueOf(cc.getSoldeFinal()),String.valueOf(cc.getDateAction())};
+				tblModel.addRow(data);
+				
+				}
+		});
 		btnNewButton.setBackground(new Color(255, 215, 0));
 		btnNewButton.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		btnNewButton.setBounds(10, 365, 89, 31);
@@ -171,10 +178,32 @@ public class Proj extends JFrame {
 		contentPane.add(panel_1);
 		panel_1.setLayout(null);
 		
+		
+		
+		
+		Object [][] donnees = { } ;
+ 
+        String[] entetes = {"N° Compte", "CNI", "Nom", "Prenom", "Sold initial", "Sold final","Date"};
+ 
+        TableModel tableModel = new DefaultTableModel(donnees, entetes);
+		table_1 = new JTable(tableModel);
+		table_1.setBounds(29, 53, 375, 151);
+		JScrollPane scrollPane = new JScrollPane(table_1);
+		scrollPane.setSize(389, 222);
+		scrollPane.setLocation(20, 23);
+		panel_1.add(scrollPane);
+		
+		
+		
+		
+		
 		JButton btnActualiser = new JButton("Actualiser");
 		btnActualiser.setBackground(new Color(255, 215, 0));
 		btnActualiser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				/*for (int i = 0; i <  banque.listes.size(); i++)
+					donnees[i] = (Object[]) banque.listes.get(i);*/
 			}
 		});
 		btnActualiser.setFont(new Font("Times New Roman", Font.BOLD, 15));
@@ -207,25 +236,7 @@ public class Proj extends JFrame {
 		panel_2.add(textField_7);
 		
 		
-		String[] columnNames = {"First Name",
-                "Last Name",
-                "Sport",
-                "# of Years",
-                "Vegetarian"};
-		Object[][] data = {
-			    {"Kathy", "Smith",
-			     "Snowboarding", new Integer(5), new Boolean(false)},
-			    {"John", "Doe",
-			     "Rowing", new Integer(3), new Boolean(true)},
-			    {"Sue", "Black",
-			     "Knitting", new Integer(2), new Boolean(false)},
-			    {"Jane", "White",
-			     "Speed reading", new Integer(20), new Boolean(true)},
-			    {"Joe", "Brown",
-			     "Pool", new Integer(10), new Boolean(false)}
-			};
 		
-		JTable table = new JTable(data, columnNames);
 		
 		
 		
