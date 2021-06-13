@@ -4,8 +4,8 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.*;
-import Modèle.Agent;
-import Modèle.*;
+import ModÃ¨le.Agent;
+import ModÃ¨le.*;
 
 
 
@@ -31,13 +31,19 @@ public class Authentification extends JFrame {
 			}
 		});
 	}
+	 public void close(){
+		 
+		 WindowEvent winClosingEvent = new WindowEvent(this,WindowEvent.WINDOW_CLOSING);
+		 Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(winClosingEvent);
+		 
+		 }
 
 	/**
 	 * Create the frame.
 	 */
 	public Authentification() {
 		setBackground(Color.ORANGE);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 742, 432);
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(255, 255, 255));
@@ -60,10 +66,12 @@ public class Authentification extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				Agent a=new Agent();
 				if(textField.getText().equals(a.getNomUtilisateur()) && passwordField.getText().equals(a.getMotPasse())) {
-					System.out.println("biennnnnnnnnn");
+					FenetrePrinc fenetre = new FenetrePrinc();
+					fenetre.setVisible(true);
+					close();
 				}else {
 					JOptionPane erreur = new JOptionPane();
-					erreur.showMessageDialog(null, "Probleme des données", "Erreur", JOptionPane.ERROR_MESSAGE);
+					erreur.showMessageDialog(null, "Probleme des donnÃ©es", "Erreur", JOptionPane.ERROR_MESSAGE);
 					textField.setText("");
 					passwordField.setText("");
 				}
@@ -125,4 +133,6 @@ public class Authentification extends JFrame {
 		lblNewLabel_4.setBounds(405, 42, 297, 56);
 		contentPane.add(lblNewLabel_4);
 	}
+	
+	
 }
