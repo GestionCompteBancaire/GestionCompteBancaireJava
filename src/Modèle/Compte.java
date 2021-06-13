@@ -1,4 +1,4 @@
-package Modèle;
+package ModÃ¨le;
 
 import java.util.Date;
 
@@ -11,6 +11,18 @@ public class Compte {
     private float soldeTrans;
     private float soldeFinal;
     private Date dateAction;
+    
+    
+    
+    public float getSoldeFinal() {
+		return soldeFinal;
+	}
+
+	public void setSoldeFinal(float soldeFinal) {
+		this.soldeFinal = soldeFinal;
+	}
+
+	
     
     public Compte() {
     }
@@ -66,20 +78,18 @@ public class Compte {
 		this.dateAction = dateAction;
 	}
 
-	public float getSoldeFinalCredit(float solde) throws PasDeSold {
-    	if(soldeTrans>=soldeFinal) {
-    		soldeFinal=soldeInitial-solde;
+	public void getSoldeFinalCredit(float solde) throws PasDeSold {
+    	if(solde<=soldeFinal) {
+    		soldeFinal=soldeFinal-solde;
     		this.setSoldeTrans(solde);
-    		return soldeFinal;
-    	}
+    	}else
     		throw new PasDeSold("Solde Insuffisant");
 		   
     }
 
-	public float getSoldeFinalDebit(float solde)  {
+	public void getSoldeFinalDebit(float solde)  {
     		soldeFinal=soldeFinal+solde;
     		this.setSoldeTrans(solde);
-    		return soldeFinal;
     }
 
 	@Override
