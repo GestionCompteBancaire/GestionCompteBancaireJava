@@ -14,9 +14,6 @@ import javax.swing.JTextPane;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-//
-import java.awt.event.*;
-
 import javax.swing.JTable;
 import java.awt.Color;
 import java.awt.Component;
@@ -36,6 +33,9 @@ import javax.swing.JTextField;
 import javax.swing.border.MatteBorder;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.SimpleDateFormat;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import com.toedter.calendar.JDateChooser;
 
 public class FenetrePrinc extends JFrame {
@@ -46,6 +46,7 @@ public class FenetrePrinc extends JFrame {
 	private JTextField textField_2;
 	private JTextField textField_3;
 	private JTextField textField_4;
+	private JDateChooser textField_5;
 	private JTextField textField_6;
 	private JTextField textField_7;
 	private JTable table_1;
@@ -112,38 +113,82 @@ public class FenetrePrinc extends JFrame {
 		panel.add(lblNewLabel_1_4_2);
 		
 		textField = new JTextField();
+		textField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+				char c=e.getKeyChar();
+				if(Character.isDigit(c)) {
+					e.consume();
+				}
+			}
+		});
+		
 		textField.setBounds(112, 21, 197, 20);
 		panel.add(textField);
 		textField.setColumns(10);
 		
 		textField_1 = new JTextField();
+		textField_1.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+				char c=e.getKeyChar();
+				if(Character.isDigit(c)) {
+					e.consume();
+				}
+			}
+		});
 		textField_1.setColumns(10);
 		textField_1.setBounds(112, 64, 197, 20);
 		panel.add(textField_1);
 		
 		textField_2 = new JTextField();
+		textField_2.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+				
+			}
+		});
 		textField_2.setColumns(10);
 		textField_2.setBounds(112, 101, 197, 20);
 		panel.add(textField_2);
 		
 		textField_3 = new JTextField();
+		textField_3.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+				char c=e.getKeyChar();
+				if(!Character.isDigit(c)) {
+					e.consume();
+				}
+			}
+			@Override
+			public void keyPressed(KeyEvent e) {
+				String num = textField_3.getText();
+	            if (num.length()<10)
+	            	textField_3.setEditable(true);
+	            else 
+	            	textField_3.setEditable(false);
+			}
+		});
 		textField_3.setColumns(10);
 		textField_3.setBounds(112, 142, 197, 20);
 		panel.add(textField_3);
 		
 		textField_4 = new JTextField();
+		textField_4.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+				char c=e.getKeyChar();
+				if(!Character.isDigit(c)) {
+					e.consume();
+				}
+			}
+		});
 		textField_4.setColumns(10);
 		textField_4.setBounds(112, 184, 197, 20);
 		panel.add(textField_4);
 		
-		
-		
-		textField_6 = new JTextField();
-		textField_6.setColumns(10);
-		textField_6.setBounds(112, 261, 197, 20);
-		panel.add(textField_6);
-		
-		JDateChooser textField_5 = new JDateChooser();
+		textField_5 = new JDateChooser();
 		textField_5.getCalendarButton().setBackground(new Color(255, 215, 0));
 		textField_5.getCalendarButton().addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -152,17 +197,29 @@ public class FenetrePrinc extends JFrame {
 		textField_5.setBounds(112, 225, 197, 20);
 		panel.add(textField_5);
 		
+		textField_6 = new JTextField();
+		textField_6.setColumns(10);
+		textField_6.setBounds(112, 261, 197, 20);
+		panel.add(textField_6);
+		
 		
 		JButton btnNewButton = new JButton("Ajouter");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Compte c=new Compte(new Client(textField_2.getText(),textField.getText(),textField_1.getText(),textField_5.getDateFormatString() ,textField_3.getText(),textField_6.getText()), Float.parseFloat(textField_4.getText()));				
+				Compte c=new Compte(new Client(textField_2.getText(),textField.getText(),textField_1.getText(),textField_5.getDateFormatString(),textField_3.getText(),textField_6.getText()), Float.parseFloat(textField_4.getText()));				
 				banque.ajouterClient(c);
 				DefaultTableModel tblModel = (DefaultTableModel) table_1.getModel();
 				Compte cc=(Compte) banque.listes.get((banque.listes.size())-1);
-				String data[]= {Integer.toString(cc.getnCompte()),cc.getClient().getCin(),cc.getClient().getNom(),cc.getClient().getPrenom(),String.valueOf(cc.getSoldeInitial()),String.valueOf(cc.getSoldeFinal()),String.valueOf(cc.getDateAction())};
+				SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+				String data[]= {Integer.toString(cc.getnCompte()),cc.getClient().getCin(),cc.getClient().getNom(),cc.getClient().getPrenom(),String.valueOf(cc.getSoldeInitial()),String.valueOf(cc.getSoldeFinal()),String.valueOf(sdf.format(cc.getDateAction()))};
 				tblModel.addRow(data);
-				
+				textField.setText("");
+				textField_1.setText("");
+				textField_2.setText("");
+				textField_3.setText("");
+				textField_3.setEditable(true);
+				textField_4.setText("");
+				textField_6.setText("");
 				}
 		});
 		btnNewButton.setBackground(new Color(255, 215, 0));
@@ -171,12 +228,66 @@ public class FenetrePrinc extends JFrame {
 		contentPane.add(btnNewButton);
 		
 		JButton btnCrditer = new JButton("Cr\u00E9diter ");
+		btnCrditer.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Float montant = Float.parseFloat(JOptionPane.showInputDialog("Saisir le montant à crediter"));
+				DefaultTableModel tblModel = (DefaultTableModel) table_1.getModel();
+				String nCompte=tblModel.getValueAt(table_1.getSelectedRow(), 0).toString();
+				for(int i=0;i<banque.listes.size();i++) {
+					if(((Compte) banque.listes.get(i)).getnCompte()==Integer.parseInt(nCompte)) {
+						try {
+							((Compte) banque.listes.get(i)).getSoldeFinalCredit(montant);
+							tblModel.setValueAt(((Compte) banque.listes.get(i)).getSoldeFinal() , table_1.getSelectedRow(), 5);
+						
+						} catch (PasDeSold e1) {
+							JOptionPane jop2 = new JOptionPane();
+							jop2.showMessageDialog(null, "Solde insuffisant", "Attention", JOptionPane.WARNING_MESSAGE);
+						}
+					}
+				}
+				textField.setText("");
+				textField_1.setText("");
+				textField_2.setText("");
+				textField_2.setEditable(true);
+				textField_3.setText("");
+				textField_3.setEditable(true);
+				textField_4.setText("");
+				textField_4.setEditable(true);
+				textField_6.setText("");
+			}
+		});
 		btnCrditer.setBackground(new Color(255, 215, 0));
 		btnCrditer.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		btnCrditer.setBounds(122, 365, 98, 31);
 		contentPane.add(btnCrditer);
 		
 		JButton btnDbiter = new JButton("D\u00E9biter");
+		btnDbiter.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Float montant = Float.parseFloat(JOptionPane.showInputDialog("Saisir le montant à debiter"));
+				DefaultTableModel tblModel = (DefaultTableModel) table_1.getModel();
+				String nCompte=tblModel.getValueAt(table_1.getSelectedRow(), 0).toString();
+
+				for(int i=0;i<banque.listes.size();i++) {
+					if(((Compte) banque.listes.get(i)).getnCompte()==Integer.parseInt(nCompte)) {
+							((Compte) banque.listes.get(i)).getSoldeFinalDebit(montant);
+							tblModel.setValueAt(((Compte) banque.listes.get(i)).getSoldeFinal() , table_1.getSelectedRow(), 5);
+						
+					}
+				}
+				
+				textField.setText("");
+				textField_1.setText("");
+				textField_2.setText("");
+				textField_2.setEditable(true);
+				textField_3.setText("");
+				textField_3.setEditable(true);
+				textField_4.setText("");
+				textField_4.setEditable(true);
+				textField_6.setText("");
+				
+			}
+		});
 		btnDbiter.setBackground(new Color(255, 215, 0));
 		btnDbiter.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		btnDbiter.setBounds(249, 365, 89, 31);
@@ -198,23 +309,102 @@ public class FenetrePrinc extends JFrame {
  
         TableModel tableModel = new DefaultTableModel(donnees, entetes);
 		table_1 = new JTable(tableModel);
+		table_1.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				DefaultTableModel tblModel = (DefaultTableModel) table_1.getModel();
+				
+				String nCompte=tblModel.getValueAt(table_1.getSelectedRow(), 0).toString();
+				String cin=tblModel.getValueAt(table_1.getSelectedRow(), 1).toString();
+				String nom=tblModel.getValueAt(table_1.getSelectedRow(), 2).toString();
+				String prenom=tblModel.getValueAt(table_1.getSelectedRow(), 3).toString();
+				String soldeI=tblModel.getValueAt(table_1.getSelectedRow(), 4).toString();
+				//String name=tblModel.getValueAt(table_1.getSelectedRow(), 5).toString();
+				String nTele = null,date=null,adresse=null;
+				for(int i=0;i<banque.listes.size();i++) {
+					if(((Compte) banque.listes.get(i)).getnCompte()==Integer.parseInt(nCompte)) {
+						 nTele = ((Compte) banque.listes.get(i)).getClient().getNumTelephone().toString();
+						 date = ((Compte) banque.listes.get(i)).getClient().getDateNaissance().toString();
+						 adresse = ((Compte) banque.listes.get(i)).getClient().getAdresse().toString();
+					}
+				}
+				textField.setText(nom);
+				textField_1.setText(prenom);
+				
+				textField_2.setText(cin);
+				textField_2.setEditable(false);
+				
+				textField_3.setText(nTele);
+				textField_3.setEditable(true);
+				textField_4.setText(soldeI);
+				textField_4.setEditable(false);
+				
+				textField_6.setText(adresse);
+				
+			}
+		});
 		table_1.setBounds(29, 53, 375, 151);
 		JScrollPane scrollPane = new JScrollPane(table_1);
-		scrollPane.setSize(389, 222);
-		scrollPane.setLocation(20, 23);
+		scrollPane.setSize(414, 222);
+		scrollPane.setLocation(10, 23);
 		panel_1.add(scrollPane);
 		
 		
-		
-		
-		
-		JButton btnActualiser = new JButton("Actualiser");
+		JButton btnActualiser = new JButton("Modifier");
 		btnActualiser.setBackground(new Color(255, 215, 0));
 		btnActualiser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+
+				DefaultTableModel tblModel=(DefaultTableModel) table_1.getModel();
+				if (table_1.getSelectedRowCount () == 1) {
+					//if single row is selected than update
+					
+					String Nom=textField.getText();
+					String Prénom=textField_1.getText();
+					String NumTel=textField_3.getText();
+					String Adresse=textField_6.getText();
+					String nCompte=tblModel.getValueAt(table_1.getSelectedRow(), 0).toString();
+					
+					// set update value on arraylist
+					
+					for(int i=0;i<banque.listes.size();i++) {
+	                    if(((Compte) banque.listes.get(i)).getnCompte()==Integer.parseInt(nCompte)) {
+	                           ((Compte) banque.listes.get(i)).getClient().setNom(Nom);
+	                           ((Compte) banque.listes.get(i)).getClient().setPrenom(Prénom);
+	                           ((Compte) banque.listes.get(i)).getClient().setNumTelephone(NumTel);
+	                           ((Compte) banque.listes.get(i)).getClient().setAdresse(Adresse);
+	                    }
+	                }
+					
+					//set updated value on table row
+					
+					tblModel.setValueAt(Nom, table_1.getSelectedRow(), 2);
+					tblModel.setValueAt(Prénom, table_1.getSelectedRow(), 3);
+					
+					//update message display
+					
+					JOptionPane.showMessageDialog(null, "Actualisation avec succés!!");
+					textField.setText("");
+					textField_1.setText("");
+					textField_2.setText("");
+					textField_2.setEditable(true);
+					textField_3.setText("");
+					textField_3.setEditable(true);
+					textField_4.setText("");
+					textField_4.setEditable(true);
+					textField_6.setText("");
+					
+				}else {
+					if(table_1.getRowCount()==0) {
+						
+						JOptionPane.showMessageDialog( null, "La table est vide");
+						
+					}else{
+						JOptionPane.showMessageDialog(null, "Veuillez selectionner une case pour l'actualiser!!");
+						
+					}
+				}
 				
-				/*for (int i = 0; i <  banque.listes.size(); i++)
-					donnees[i] = (Object[]) banque.listes.get(i);*/
 			}
 		});
 		btnActualiser.setFont(new Font("Times New Roman", Font.BOLD, 15));
@@ -224,16 +414,30 @@ public class FenetrePrinc extends JFrame {
 		JButton btnSupprimer = new JButton("Supprimer");
 		btnSupprimer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				///////hnaaaa
 				DefaultTableModel tblModel=(DefaultTableModel) table_1.getModel();
+				String nCompte=tblModel.getValueAt(table_1.getSelectedRow(), 0).toString();
 				if(table_1.getSelectedRowCount()==1) {
 					tblModel.removeRow(table_1.getSelectedRow());
+					for(int i=0;i<banque.listes.size();i++) {
+	                    if(((Compte) banque.listes.get(i)).getnCompte()==Integer.parseInt(nCompte)) {
+	                    	banque.listes.remove(i);
+	                    }
+	                }
+					
 				}else {
 						JOptionPane.showMessageDialog(null,"veuillez sélectionner une ligne à supprimer.");
 					}
-				}
+				textField.setText("");
+				textField_1.setText("");
+				textField_2.setText("");
+				textField_2.setEditable(true);
+				textField_3.setText("");
+				textField_3.setEditable(true);
+				textField_4.setText("");
+				textField_4.setEditable(true);
+				textField_6.setText("");
+			}
 		});
-		
 		btnSupprimer.setBackground(new Color(255, 215, 0));
 		btnSupprimer.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		btnSupprimer.setBounds(600, 336, 107, 35);
