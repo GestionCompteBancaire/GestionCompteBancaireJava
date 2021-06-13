@@ -7,6 +7,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.JTextPane;
 import javax.swing.JButton;
@@ -31,6 +33,7 @@ import javax.swing.JTextField;
 import javax.swing.border.MatteBorder;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.SimpleDateFormat;
 
 public class FenetrePrinc extends JFrame {
 
@@ -145,12 +148,20 @@ public class FenetrePrinc extends JFrame {
 		JButton btnNewButton = new JButton("Ajouter");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Compte c=new Compte(new Client(textField_2.getText(),textField.getText(),textField_1.getText(),textField_5.getText(),textField_3.getText(),textField_6.getText()), Float.parseFloat(textField_4.getText()));				
-				banque.ajouterClient(c);
-				DefaultTableModel tblModel = (DefaultTableModel) table_1.getModel();
-				Compte cc=(Compte) banque.listes.get((banque.listes.size())-1);
-				String data[]= {Integer.toString(cc.getnCompte()),cc.getClient().getCin(),cc.getClient().getNom(),cc.getClient().getPrenom(),String.valueOf(cc.getSoldeInitial()),String.valueOf(cc.getSoldeFinal()),String.valueOf(cc.getDateAction())};
-				tblModel.addRow(data);
+				Compte c=new Compte(new Client(textField_2.getText(),textField.getText(),textField_1.getText(),textField_5.getText(),textField_3.getText(),textField_6.getText()), Float.parseFloat(textField_4.getText()));                
+                banque.ajouterClient(c);
+                DefaultTableModel tblModel = (DefaultTableModel) table_1.getModel();
+                Compte cc=(Compte) banque.listes.get((banque.listes.size())-1);
+                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+                String data[]= {Integer.toString(cc.getnCompte()),cc.getClient().getCin(),cc.getClient().getNom(),cc.getClient().getPrenom(),String.valueOf(cc.getSoldeInitial()),String.valueOf(cc.getSoldeFinal()),String.valueOf(sdf.format(cc.getDateAction()))};
+                tblModel.addRow(data);
+                textField.setText("");
+                textField_1.setText("");
+                textField_2.setText("");
+                textField_3.setText("");
+                textField_4.setText("");
+                textField_5.setText("");
+                textField_6.setText("");
 				
 				}
 		});
@@ -187,8 +198,54 @@ public class FenetrePrinc extends JFrame {
  
         TableModel tableModel = new DefaultTableModel(donnees, entetes);
 		table_1 = new JTable(tableModel);
+		table_1.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				DefaultTableModel tblModel = (DefaultTableModel) table_1.getModel();
+                
+                String nCompte=tblModel.getValueAt(table_1.getSelectedRow(), 0).toString();
+                String cin=tblModel.getValueAt(table_1.getSelectedRow(), 1).toString();
+                String nom=tblModel.getValueAt(table_1.getSelectedRow(), 2).toString();
+                String prenom=tblModel.getValueAt(table_1.getSelectedRow(), 3).toString();
+                String soldeI=tblModel.getValueAt(table_1.getSelectedRow(), 4).toString();
+                //String name=tblModel.getValueAt(table_1.getSelectedRow(), 5).toString();
+                String nTele = null,date=null,adresse=null;
+                for(int i=0;i<banque.listes.size();i++) {
+                    if(((Compte) banque.listes.get(i)).getnCompte()==Integer.parseInt(nCompte)) {
+                         nTele = ((Compte) banque.listes.get(i)).getClient().getNumTelephone().toString();
+                         date = ((Compte) banque.listes.get(i)).getClient().getDateNaissance().toString();
+                         adresse = ((Compte) banque.listes.get(i)).getClient().getAdresse().toString();
+                    }
+                }
+                textField.setText(nom);
+                
+                textField_1.setText(prenom);
+                
+                textField_2.setText(cin);
+                textField_2.setEditable(false);
+                
+                textField_3.setText(nTele);
+                
+                textField_4.setText(soldeI);
+                textField_4.setEditable(false);
+                
+                textField_5.setText(date);
+                textField_6.setText(adresse);
+                
+			}
+		});
 		table_1.setBounds(29, 53, 375, 151);
 		JScrollPane scrollPane = new JScrollPane(table_1);
+		scrollPane.addMouseListener(new MouseAdapter() {
+			
+				
+				
+				
+				
+				
+				
+			
+		});
 		scrollPane.setSize(389, 222);
 		scrollPane.setLocation(20, 23);
 		panel_1.add(scrollPane);
@@ -202,6 +259,55 @@ public class FenetrePrinc extends JFrame {
 		btnActualiser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
+				DefaultTableModel tblModel=(DefaultTableModel) table_1.getModel();
+				if (table_1.getSelectedRowCount () == 1) {
+					//if single row is selected than update
+					
+					String Nom=textField.getText();
+					String Prénom=textField_1.getText();
+					String NumTel=textField_3.getText();
+					String Adresse=textField_6.getText();
+					String nCompte=tblModel.getValueAt(table_1.getSelectedRow(), 0).toString();
+					
+					// set update value on arraylist
+					
+					for(int i=0;i<banque.listes.size();i++) {
+	                    if(((Compte) banque.listes.get(i)).getnCompte()==Integer.parseInt(nCompte)) {
+	                           ((Compte) banque.listes.get(i)).getClient().setNom(Nom);
+	                           ((Compte) banque.listes.get(i)).getClient().setPrenom(Prénom);
+	                           ((Compte) banque.listes.get(i)).getClient().setNumTelephone(NumTel);
+	                           ((Compte) banque.listes.get(i)).getClient().setAdresse(Adresse);
+	                    }
+	                }
+					
+					//set updated value on table row
+					
+					tblModel.setValueAt(Nom, table_1.getSelectedRow(), 2);
+					tblModel.setValueAt(Prénom, table_1.getSelectedRow(), 3);
+					
+					//update message display
+					
+					JOptionPane.showMessageDialog(null, "Actualisation avec succés!!");
+					textField.setText("");
+					textField_1.setText("");
+					textField_2.setText("");
+					textField_2.setEditable(true);
+					textField_3.setText("");
+					textField_4.setText("");
+					textField_4.setEditable(true);
+					textField_5.setText("");
+					textField_6.setText("");
+					
+				}else {
+					if(table_1.getRowCount()==0) {
+						
+						JOptionPane.showMessageDialog( null, "La table est vide");
+						
+					}else{
+						JOptionPane.showMessageDialog(null, "Veuillez selectionner une case pour l'actualiser!!");
+						
+					}
+				}
 				/*for (int i = 0; i <  banque.listes.size(); i++)
 					donnees[i] = (Object[]) banque.listes.get(i);*/
 			}
