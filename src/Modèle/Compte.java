@@ -2,7 +2,7 @@ package Modèle;
 
 import java.util.Date;
 
-public class Compte {
+public class Compte implements Comparable<Compte>{
 	
 	private static int compteur=10000;
     private int nCompte;
@@ -96,6 +96,16 @@ public class Compte {
 	public String toString() {
 		return " [" + nCompte + ",(" + client + "), " + soldeInitial + ", "
 				+ soldeTrans + ", " + soldeFinal + ", " + dateAction + "]";
+	}
+
+	
+	
+
+	@Override
+	public int compareTo(Compte o) {
+		String nom1=this.client.getNom();
+		String nom2=o.getClient().getNom();
+			return nom1.compareTo(nom2);
 	}
 	
 	
