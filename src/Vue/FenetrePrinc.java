@@ -34,6 +34,7 @@ import javax.swing.border.MatteBorder;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import com.toedter.calendar.JDateChooser;
@@ -318,8 +319,7 @@ public class FenetrePrinc extends JFrame {
 				String cin=tblModel.getValueAt(table_1.getSelectedRow(), 1).toString();
 				String nom=tblModel.getValueAt(table_1.getSelectedRow(), 2).toString();
 				String prenom=tblModel.getValueAt(table_1.getSelectedRow(), 3).toString();
-				String soldeI=tblModel.getValueAt(table_1.getSelectedRow(), 4).toString();
-				//String name=tblModel.getValueAt(table_1.getSelectedRow(), 5).toString();
+				String soldeI=tblModel.getValueAt(table_1.getSelectedRow(), 5).toString();
 				String nTele = null,date=null,adresse=null;
 				for(int i=0;i<banque.listes.size();i++) {
 					if(((Compte) banque.listes.get(i)).getnCompte()==Integer.parseInt(nCompte)) {
@@ -393,7 +393,8 @@ public class FenetrePrinc extends JFrame {
 					textField_4.setText("");
 					textField_4.setEditable(true);
 					textField_6.setText("");
-					
+					textField_7.setText("0");
+					modifierJtable(banque.listes);
 				}else {
 					if(table_1.getRowCount()==0) {
 						
@@ -408,7 +409,7 @@ public class FenetrePrinc extends JFrame {
 			}
 		});
 		btnActualiser.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		btnActualiser.setBounds(411, 336, 107, 35);
+		btnActualiser.setBounds(388, 363, 107, 35);
 		contentPane.add(btnActualiser);
 		
 		JButton btnSupprimer = new JButton("Supprimer");
@@ -424,6 +425,7 @@ public class FenetrePrinc extends JFrame {
 	                    }
 	                }
 					
+					
 				}else {
 						JOptionPane.showMessageDialog(null,"veuillez sélectionner une ligne à supprimer.");
 					}
@@ -436,11 +438,13 @@ public class FenetrePrinc extends JFrame {
 				textField_4.setText("");
 				textField_4.setEditable(true);
 				textField_6.setText("");
+				textField_7.setText("");
+				modifierJtable(banque.listes);
 			}
 		});
 		btnSupprimer.setBackground(new Color(255, 215, 0));
 		btnSupprimer.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		btnSupprimer.setBounds(600, 336, 107, 35);
+		btnSupprimer.setBounds(581, 363, 107, 35);
 		contentPane.add(btnSupprimer);
 		
 		JPanel panel_2 = new JPanel();
@@ -458,14 +462,103 @@ public class FenetrePrinc extends JFrame {
 		panel_2.add(lblNewLabel_1_3_1);
 		
 		textField_7 = new JTextField();
+		
+		textField_7.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				
+				ArrayList<Compte> comptes=banque.listes;
+				DefaultTableModel tblModel=(DefaultTableModel) table_1.getModel();Compte cc;
+				if(textField_7.getText().equals("") || textField_7.getText().equals("0")) {
+					textField_7.setText("0");
+					textField.setText("");
+					textField_1.setText("");
+					textField_2.setText("");
+					textField_2.setEditable(true);
+					textField_3.setText("");
+					textField_3.setEditable(true);
+					textField_4.setText("");
+					textField_4.setEditable(true);
+					textField_6.setText("");
+					modifierJtable(comptes);
+				}
+				int cin = Integer.parseInt(textField_7.getText());
+				
+				for(int i=0;i<comptes.size();i++){
+					if(comptes.get(i).getnCompte()==cin) {
+						textField.setText(comptes.get(i).getClient().getNom());
+						textField_1.setText(comptes.get(i).getClient().getPrenom());
+						textField_2.setText(comptes.get(i).getClient().getCin());
+						textField_2.setEditable(false);
+						textField_3.setText(comptes.get(i).getClient().getNumTelephone());
+						textField_3.setEditable(true);
+						textField_4.setText(String.valueOf(comptes.get(i).getSoldeFinal()));
+						textField_4.setEditable(false);
+						textField_6.setText(comptes.get(i).getClient().getAdresse());
+						
+						while(tblModel.getRowCount() > 0)
+							tblModel.removeRow(0);
+						cc=comptes.get(i);
+						SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+						String data[]= {Integer.toString(cc.getnCompte()),cc.getClient().getCin(),cc.getClient().getNom(),cc.getClient().getPrenom(),String.valueOf(cc.getSoldeInitial()),String.valueOf(cc.getSoldeFinal()),String.valueOf(sdf.format(cc.getDateAction()))};
+						tblModel.addRow(data);
+						table_1.getSelectionModel().setSelectionInterval(0,0);
+					}
+				}
+			}
+		});
 		textField_7.setColumns(10);
 		textField_7.setBounds(111, 28, 197, 20);
 		panel_2.add(textField_7);
 		
+		JButton btnTrierParNom = new JButton("Trier par Nom");
+		btnTrierParNom.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ArrayList<Compte> comptes=banque.trierNom();
+				DefaultTableModel tblModel=(DefaultTableModel) table_1.getModel();
+				modifierJtable(comptes);
+			}
+		});
+		btnTrierParNom.setFont(new Font("Times New Roman", Font.BOLD, 15));
+		btnTrierParNom.setBackground(new Color(255, 215, 0));
+		btnTrierParNom.setBounds(376, 413, 175, 35);
+		contentPane.add(btnTrierParNom);
+		
+		JButton btnTrierParSold = new JButton("Trier par Sold");
+		btnTrierParSold.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ArrayList<Compte> comptes=banque.trierSolde();
+				DefaultTableModel tblModel=(DefaultTableModel) table_1.getModel();
+				while(tblModel.getRowCount() > 0)
+					tblModel.removeRow(0);
+				Compte cc;
+				for(int i=0;i<comptes.size();i++){
+					cc=comptes.get(i);
+					SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+					String data[]= {Integer.toString(cc.getnCompte()),cc.getClient().getCin(),cc.getClient().getNom(),cc.getClient().getPrenom(),String.valueOf(cc.getSoldeInitial()),String.valueOf(cc.getSoldeFinal()),String.valueOf(sdf.format(cc.getDateAction()))};
+					tblModel.addRow(data);
+				}
+			}
+		});
+		btnTrierParSold.setFont(new Font("Times New Roman", Font.BOLD, 15));
+		btnTrierParSold.setBackground(new Color(255, 215, 0));
+		btnTrierParSold.setBounds(581, 413, 175, 35);
+		contentPane.add(btnTrierParSold);
+	
 		
 		
-		
-		
-		
+	}
+	
+	public void modifierJtable(ArrayList<Compte> comptes) {
+		DefaultTableModel tblModel=(DefaultTableModel) table_1.getModel();
+		while(tblModel.getRowCount() > 0)
+			tblModel.removeRow(0);
+		Compte cc;
+		for(int i=0;i<comptes.size();i++){
+			cc=comptes.get(i);
+			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+			String data[]= {Integer.toString(cc.getnCompte()),cc.getClient().getCin(),cc.getClient().getNom(),cc.getClient().getPrenom(),String.valueOf(cc.getSoldeInitial()),String.valueOf(cc.getSoldeFinal()),String.valueOf(sdf.format(cc.getDateAction()))};
+			tblModel.addRow(data);
+		}
 	}
 }
